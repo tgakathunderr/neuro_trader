@@ -130,25 +130,29 @@ class TradingAdapter(BaseNeuralAdapter):
         dlpfc = self.brain.neocortex.registry.get_area("DLPFC_WorkingMemory").l5_output
         proposals = dlpfc[:self.n_actions].copy()
 
-        ema_spread = float(features[48]) if features.size > 48 else 0.0
-        momentum = float(features[50]) if features.size > 50 else 0.0
+        # Biological Subthalamic Nucleus (STN) Hyperdirect Emergency Brake:
+        # When held position experiences acute nociceptive pain (drawdown), STN fires hyperdirect brake
+        if position_exposure > 0.0 and somatic[1] > 0.12:
+            self.brain.basal_ganglia.trigger_hyperdirect_stop()
+            # Hyperdirect pathway forces emergency motor withdrawal to cash (Channel 2)
+            proposals[2] += 12.0
+            proposals[1] -= 12.0
 
         if position_exposure <= 0.0:
-            # Currently in Cash: Can BUY or HOLD, cannot SELL
-            proposals[2] -= 3.0
-            # Visual sensory drive for BUY (bullish crossover / momentum)
-            proposals[1] += float(ema_spread * 0.3 + momentum * 0.2)
-            # If Hippocampal familiarity to past winning trade is high, boost conviction
-            if self.hippocampal_match > 0.6:
-                proposals[1] += float(self.hippocampal_match * 0.8)
+            # In Cash: Somatic lack of inventory inhibits SELL
+            proposals[2] -= 5.0
+            # Visual sensory drive from Optic Nerve V1 cortex + Hippocampal CA3 attractor familiarity
+            v1_out = self.brain.neocortex.registry.get_area("V1_Visual").l5_output
+            v1_drive = float(np.mean(v1_out[:4])) if v1_out.size >= 4 else 0.0
+            dopamine_drive = (float(self.brain.chemistry.matrix.state.dopamine) - 0.5) * 1.5
+            proposals[1] += v1_drive * 0.5 + float(self.hippocampal_match * 1.5) + dopamine_drive
         else:
-            # Currently in Position: Can SELL or HOLD, cannot BUY
-            proposals[1] -= 3.0
-            # Profit-taking drive or Drawdown aversion drive
-            if unrealized_pnl > 0.015:
-                proposals[2] += float(unrealized_pnl * 12.0)  # Bank profit
-            elif unrealized_pnl < -0.015:
-                proposals[2] += float(abs(unrealized_pnl) * 15.0)  # Cut loss / protect capital
+            # In Position: Somatic satiety inhibits re-buying
+            proposals[1] -= 5.0
+            # Continuous biological drive: Nociceptive pain (STT) + Enteric satiety / profit homeostasis
+            pain_drive = somatic[1] * 2.5
+            satiety_drive = float(np.clip(unrealized_pnl * 8.0, 0.0, 4.0))
+            proposals[2] += pain_drive + satiety_drive
 
         winner_idx, _ = self.brain.basal_ganglia.select_action(
             proposals, dopamine_level=self.brain.chemistry.matrix.state.dopamine

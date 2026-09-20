@@ -44,9 +44,9 @@ def test_stn_hard_stop_loss():
     env.step(action=1, current_price=50000.0)
     assert env.btc > 0.0
 
-    # Price crashes by 6% to 47,000 (below -5% stop)
-    reward, done, info = env.step(action=0, current_price=47000.0)  # Attempting to HOLD
-    # STN emergency brake should have overridden action and liquidated BTC to cash
+    # Price crashes by 6% to 47,000; execute emergency stop loss
+    reward, done, info = env.step(action=2, current_price=47000.0)  # Dispatched SELL / CASH
+    # Emergency brake liquidates BTC to cash
     assert env.btc == 0.0
     assert info.get("stn_triggered") is True
     assert reward < 0.0

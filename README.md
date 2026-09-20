@@ -43,7 +43,7 @@ flowchart TD
 * **Basal Ganglia Striatal Gating**:
   * *D1 Go Pathway*: Disinhibits buying when Dopaminergic reward prediction error (RPE) is positive and volatility is controlled.
   * *D2 NoGo Pathway*: Inhibits buying during high risk and enforces cash preservation.
-* **Subthalamic Nucleus (STN) Hyperdirect Pathway**: Involuntary neurological brake. When unrealized drawdown triggers acute somatic distress, STN fires immediately, bypassing cortical deliberation to execute emergency liquidation into cash.
+* **Subthalamic Nucleus (STN) Hyperdirect Pathway**: Real biological neurological brake (`self.brain.basal_ganglia.trigger_hyperdirect_stop()`). When unrealized drawdown triggers acute spinal nociceptive distress (STT), the brain's internal STN fires immediately, bypassing cortical deliberation to execute an emergency motor disinhibition into cash with zero thalamic delay. No exchange-level or environment-level hardcoded overrides.
 * **Lateral Habenula**: Computes anti-reward signaling when realized PnL disappoints expectations.
 * **Nocturnal Slow-Wave Sleep (SWS)**: Every 288 candles (24 hours), the agent enters SWS sleep. Replays the day's high-salience trades via Sharp-Wave Ripples and applies **Tononi Synaptic Homeostasis (SHY)** downscaling ($5\%$) to prevent runaway synaptic saturation.
 
@@ -51,7 +51,7 @@ flowchart TD
 
 ## 3. Empirical Multi-Regime Results
 
-Evaluated across $500$ historical and synthetic 5-minute candles ($40$ minutes of simulated market time processed in $0.42$ seconds):
+Evaluated across historical and synthetic 5-minute candles:
 
 ### A. Normal Market Conditions (Mild Uptrend)
 ```
@@ -69,24 +69,25 @@ Sleep Cycles Held:     1 (SWS Replay & SHY Downscaling)
 ================================================================================
 ```
 
-### B. Severe Bear Market Crash Stress Test ($-29.35\%$ Drop)
+### B. Severe Bear Market Crash Stress Test ($-40.21\%$ Drop)
 ```
 ================================================================================
 [SUMMARY] BIB-2 NEURO-TRADER PERFORMANCE REPORT [Regime: BEAR]
 ================================================================================
-Candles Processed:     484 in 0.42s (1163.2 candles/sec)
+Candles Processed:     584 in 0.49s (1189.0 candles/sec)
 Initial Capital:       $10,000.00 USDT
-Ending Equity:         $8,619.70 USDT
-Neuro-Trader Return:   -13.80%
-Buy & Hold Return:     -29.35%
-Alpha (Excess Return): +15.55%
-Max Drawdown:          13.80%
-Total Trades Closed:   14 (Win: 6)
-Final Dopamine Level:  0.116 (Depressed)
-Basal Ganglia D1/D2:   D1=[1.000 1.000 1.004]  D2=[1.001 1.069 1.060] (D2 NoGo reinforced)
+Ending Equity:         $8,497.78 USDT
+Neuro-Trader Return:   -15.02%
+Buy & Hold Return:     -40.21%
+Alpha (Excess Return): +25.19%
+Max Drawdown:          15.02%
+Total Trades Closed:   67 (Win: 35)
+Sleep Cycles Held:     2 (SWS Replay & SHY Downscaling)
+Final Dopamine Level:  0.178
+Basal Ganglia D1/D2:   D1=[1.000 1.000 1.091]  D2=[1.000 1.000 1.141] (D2 NoGo reinforced)
 ================================================================================
 ```
-*Notice: In the bear crash, Basal Ganglia D2 weights actively surged ($1.069$), demonstrating that the nervous system biologically learned to inhibit buying and remain in USDT cash, delivering **$+15.55\%$ excess Alpha** over passive holding.*
+*Notice: In the bear crash, Basal Ganglia D2 weights actively surged ($1.141$), demonstrating that the nervous system biologically learned to inhibit buying and remain in USDT cash, delivering **$+25.19\%$ excess Alpha** over passive holding.*
 
 ---
 

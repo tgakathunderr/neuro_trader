@@ -72,10 +72,9 @@ class SpotTradingEnv:
         stn_triggered = False
         effective_slippage = self.base_slippage * (1.0 + 10.0 * volatility_atr)
 
-        # 1. Check Subthalamic Nucleus (STN) Hyperdirect Emergency Stop
+        # Calculate current unrealized return
         unrealized = self.get_unrealized_pnl(current_price)
-        if self.btc > 0.0 and unrealized <= self.stn_stop_pct:
-            action = 2  # Involuntary override to SELL / CASH
+        if action == 2 and self.btc > 0.0 and unrealized <= -0.01:
             stn_triggered = True
 
         # 2. Execute Actions
